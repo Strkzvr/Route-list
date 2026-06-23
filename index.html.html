@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Маршрутный лист водителя / курьера · v14 Mobile Fixed</title>
+  <style>
+    :root{
+      --bg:#f4f6f5;
+      --card:#ffffff;
+      --text:#14201b;
+      --muted:#68746f;
+      --line:#d9e1dd;
+      --soft:#eef3f0;
+      --accent:#2f6b4f;
+      --accent2:#163c2b;
+      --warn:#a66b00;
+      --bad:#a32f2f;
+      --good:#2f6b4f;
+      --shadow:0 14px 40px rgba(20,32,27,.08);
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(135deg,#f7faf8 0%,#eef4f1 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+    button,input,select,textarea{font:inherit}
+    button{border:0;border-radius:12px;padding:10px 14px;background:var(--accent);color:#fff;cursor:pointer;font-weight:700;box-shadow:0 6px 18px rgba(47,107,79,.18)}
+    button:hover{filter:brightness(.96)}
+    button.secondary{background:#fff;color:var(--accent2);border:1px solid var(--line);box-shadow:none}
+    button.ghost{background:transparent;color:var(--accent2);border:1px solid var(--line);box-shadow:none}
+    button.danger{background:#fff;color:var(--bad);border:1px solid #e7c5c5;box-shadow:none}
+    button.small{padding:7px 9px;border-radius:10px;font-size:12px}
+    .wrap{max-width:1440px;margin:0 auto;padding:22px}
+    .hero{display:flex;gap:18px;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+    .hero-title{display:flex;flex-direction:column;gap:8px}
+    .eyebrow{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+    h1{font-size:34px;line-height:1.05;margin:0;letter-spacing:-.04em}
+    .subtitle{max-width:820px;color:var(--muted);font-size:15px;line-height:1.5}
+    .hero-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:start}
+    .card{background:rgba(255,255,255,.92);border:1px solid rgba(217,225,221,.85);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;backdrop-filter:blur(10px)}
+    .card h2{font-size:20px;margin:0 0 12px;letter-spacing:-.02em}
+    .hint{font-size:13px;color:var(--muted);line-height:1.45;margin:8px 0 0}
+    .row{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
+    .field{display:flex;flex-direction:column;gap:5px;min-width:0}
+    label{font-size:12px;font-weight:800;color:#405049}
+    input,select,textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;padding:10px 11px;color:var(--text);outline:none;min-height:42px}
+    textarea{resize:vertical;min-height:42px}
+    input:focus,select:focus,textarea:focus{border-color:rgba(47,107,79,.7);box-shadow:0 0 0 3px rgba(47,107,79,.12)}
+    .span-2{grid-column:span 2}.span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-5{grid-column:span 5}.span-6{grid-column:span 6}.span-7{grid-column:span 7}.span-8{grid-column:span 8}.span-9{grid-column:span 9}.span-12{grid-column:span 12}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:14px 0 10px}
+    .toolbar-left,.toolbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:var(--soft);font-size:12px;font-weight:800;color:#405049;white-space:nowrap}
+    .pill.good{background:#e8f4ee;color:var(--good);border-color:#cfe3d8}.pill.warn{background:#fff4df;color:var(--warn);border-color:#ead7a9}.pill.bad{background:#ffeded;color:var(--bad);border-color:#efcccc}
+    .route-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+    .point{border:1px solid var(--line);border-radius:18px;background:#fff;padding:13px;position:relative}
+    .point-head{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .point-title{display:flex;gap:8px;align-items:center;min-width:0}
+    .order-badge{width:34px;height:34px;border-radius:12px;background:var(--accent2);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;flex:0 0 auto}
+    .point-name{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .point-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+    .status-planned{background:#edf2ff;color:#304d8b;border-color:#cdd9ff}.status-done{background:#e8f4ee;color:var(--good);border-color:#cfe3d8}.status-problem{background:#ffeded;color:var(--bad);border-color:#efcccc}.status-wait{background:#fff4df;color:var(--warn);border-color:#ead7a9}
+    .compact-table{width:100%;border-collapse:separate;border-spacing:0 8px}
+    .compact-table th{font-size:11px;text-align:left;color:var(--muted);padding:0 8px;text-transform:uppercase;letter-spacing:.04em}
+    .compact-table td{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px;vertical-align:top;font-size:13px}
+    .compact-table td:first-child{border-left:1px solid var(--line);border-radius:12px 0 0 12px}.compact-table td:last-child{border-right:1px solid var(--line);border-radius:0 12px 12px 0}
+    .contact-row input,.contact-row select,.contact-row textarea{font-size:13px;min-height:36px;padding:8px;border-radius:10px}
+    .saved-list{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow:auto;padding-right:4px}
+    .saved-item{border:1px solid var(--line);border-radius:14px;padding:10px;background:#fff;display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+    .saved-title{font-weight:900;font-size:14px}.saved-meta{font-size:12px;color:var(--muted);margin-top:3px}.saved-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+    .empty{border:1px dashed var(--line);border-radius:16px;padding:18px;text-align:center;color:var(--muted);background:rgba(255,255,255,.6)}
+    .divider{height:1px;background:var(--line);margin:14px 0}
+    .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#14201b;color:#fff;padding:12px 14px;border-radius:14px;box-shadow:var(--shadow);font-size:14px;opacity:0;pointer-events:none;transition:.18s;z-index:10}.toast.show{opacity:1;bottom:30px}
+    .print-area{display:none}
+
+    .mobile-bottom-bar{display:none}
+    .mobile-only-note{display:none}
+    @media(max-width:720px){
+      html{scroll-behavior:smooth}
+      body{background:#f7faf8;font-size:15px;-webkit-text-size-adjust:100%}
+      .wrap{padding:10px 10px 92px;max-width:100%}
+      .hero{gap:12px;margin-bottom:12px}
+      .eyebrow{font-size:11px}
+      h1{font-size:25px;line-height:1.08;letter-spacing:-.03em}
+      .subtitle{font-size:13px;line-height:1.35}
+      .hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+      .hero-actions button{width:100%;min-height:48px;padding:11px 10px;border-radius:14px;font-size:14px}
+      #printBtn{grid-column:span 2}
+      .grid,.two-col{gap:12px}
+      .card{border-radius:16px;padding:13px;box-shadow:0 8px 24px rgba(20,32,27,.07)}
+      .card h2{font-size:18px;margin-bottom:10px}
+      .hint{font-size:12.5px}
+      .mobile-only-note{display:block}
+      .row{gap:8px}
+      label{font-size:11.5px}
+      input,select,textarea{min-height:48px;padding:12px 11px;border-radius:13px;font-size:16px}
+      textarea{min-height:84px}
+      button{min-height:46px;border-radius:14px;padding:11px 12px}
+      button.small{min-height:40px;font-size:13px;padding:8px 10px}
+      .toolbar{align-items:stretch;gap:8px;margin:12px 0 8px}
+      .toolbar-left,.toolbar-right{width:100%;display:grid;grid-template-columns:1fr;gap:8px;align-items:stretch}
+      .toolbar-right button{width:100%}
+      .pill{justify-content:center;white-space:normal;text-align:center;line-height:1.25}
+      .route-list{gap:12px}
+      .point{border-radius:16px;padding:12px;box-shadow:0 5px 16px rgba(20,32,27,.05)}
+      .point-head{flex-direction:column;gap:9px;align-items:stretch}
+      .point-title{width:100%;align-items:flex-start}
+      .order-badge{width:42px;height:42px;border-radius:14px;font-size:18px}
+      .point-name{white-space:normal;line-height:1.2;font-size:16px}
+      .point-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;width:100%}
+      .point-actions button{width:100%}
+      .saved-list{max-height:none}
+      .saved-item{flex-direction:column;align-items:stretch;border-radius:14px}
+      .saved-actions{display:grid;grid-template-columns:1fr 1fr 1fr;width:100%}
+      .compact-table{display:block;overflow:visible;border-spacing:0}
+      .compact-table thead{display:none}
+      .compact-table tbody,.compact-table tr,.compact-table td{display:block;width:100%}
+      .compact-table tr{border:1px solid var(--line);border-radius:14px;background:#fff;margin-bottom:10px;padding:8px}
+      .compact-table td{border:0!important;border-radius:0!important;padding:5px;background:transparent}
+      .contact-row input,.contact-row select,.contact-row textarea{min-height:46px;font-size:16px}
+      .mobile-bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:rgba(247,250,248,.96);border-top:1px solid var(--line);box-shadow:0 -10px 30px rgba(20,32,27,.12);backdrop-filter:blur(12px)}
+      .mobile-bottom-bar .mobile-fab{min-height:46px;padding:8px 6px;border-radius:13px;background:#fff;color:var(--accent2);border:1px solid var(--line);box-shadow:none;font-size:12px;font-weight:900;line-height:1.1}
+      .mobile-bottom-bar .mobile-fab.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+      .toast{left:10px;right:10px;bottom:74px;transform:none;text-align:center}.toast.show{bottom:84px}
+    }
+    @media(max-width:980px){.grid,.two-col{grid-template-columns:1fr}.hero{flex-direction:column}.hero-actions{justify-content:flex-start}.span-2,.span-3,.span-4,.span-5,.span-6,.span-7,.span-8,.span-9{grid-column:span 12}.compact-table{display:block;overflow-x:auto}.wrap{padding:14px}h1{font-size:28px}}
+    @media print{
+      body{background:#fff;color:#111}
+      .wrap,.toast{display:none!important}
+      .print-area{display:block!important;padding:0;font-family:Arial,sans-serif;color:#111}
+      @page{size:A4;margin:12mm}
+      .print-title{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;border-bottom:2px solid #111;padding-bottom:8px;margin-bottom:10px}
+      .print-title h1{font-size:22px;margin:0;letter-spacing:0}.print-title small{font-size:11px;color:#555}
+      .print-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 12px;font-size:12px}
+      .print-box{border:1px solid #444;border-radius:6px;padding:6px;min-height:34px}.print-label{font-size:9px;text-transform:uppercase;color:#555;font-weight:bold;margin-bottom:2px}.print-value{font-size:12px;font-weight:600;white-space:pre-wrap}
+      .print-table{width:100%;border-collapse:collapse;font-size:10.5px;table-layout:fixed}.print-table th,.print-table td{border:1px solid #333;padding:5px;vertical-align:top;word-break:break-word}.print-table th{background:#efefef;text-align:left;font-size:9px;text-transform:uppercase}.print-table .num{width:24px;text-align:center}.print-table .wide{width:21%}.print-table .mid{width:13%}.print-table .small{width:10%}
+      .print-notes{margin-top:12px;border:1px solid #444;border-radius:6px;padding:8px;font-size:12px;white-space:pre-wrap}.signature{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:18px;font-size:12px}.sign-line{border-bottom:1px solid #111;height:28px}
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap" id="app">
+    <section class="hero">
+      <div class="hero-title">
+        <div class="eyebrow">Маршрутный лист · логистика</div>
+        <h1>Маршрутный лист водителя / курьера</h1>
+        <div class="subtitle">Локальная мини‑CRM для рейсов: справочник поставщиков и адресов, точки маршрута с заявками на отгрузку, сортировка очередности, сохранение рейсов и экспорт в PDF через печать. Основные поставщики, склад и частые транспортные компании уже добавлены в справочник. В сохранённых маршрутах есть пример старого листа на 15 июня — его можно открыть, скопировать и использовать как шаблон. Есть отдельная логика для отправок в ТК: терминал, заявка / накладная, получатель, город, количество мест, упаковка и обязательный чек‑лист контроля разгрузки, упаковки, фото и проверки накладной.</div>
+      </div>
+      <div class="hero-actions">
+        <button type="button" class="secondary" id="newRouteBtn">Новый маршрут</button>
+        <button type="button" class="secondary" id="saveRouteBtn">Сохранить маршрут</button>
+        <button type="button" id="printBtn">Экспорт PDF</button>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>1. Данные рейса</h2>
+        <p class="hint mobile-only-note">Мобильная версия: крупные поля, большие кнопки и нижняя панель быстрого добавления. Точки добавляются кнопками «+ Забор», «+ Доставка», «+ ТК». После заполнения нажмите «Сохранить» или «Экспорт PDF».</p>
+        <div class="row">
+          <div class="field span-4"><label>Название / цель маршрута</label><input data-route-field="title" placeholder="Например: Заборы у поставщиков + доставка клиенту" /></div>
+          <div class="field span-2"><label>Дата</label><input type="date" data-route-field="date" /></div>
+          <div class="field span-3"><label>Водитель / курьер</label><input data-route-field="driver" placeholder="ФИО" /></div>
+          <div class="field span-3"><label>Телефон водителя</label><input type="tel" inputmode="tel" data-route-field="driverPhone" placeholder="+7..." /></div>
+          <div class="field span-3"><label>Авто</label><input data-route-field="car" placeholder="Машина / госномер" /></div>
+          <div class="field span-3"><label>Ответственный менеджер</label><input data-route-field="manager" placeholder="Кто на связи" /></div>
+          <div class="field span-3"><label>Телефон менеджера</label><input type="tel" inputmode="tel" data-route-field="managerPhone" placeholder="+7..." /></div>
+          <div class="field span-3"><label>Общий статус</label><select data-route-field="status"><option value="Черновик">Черновик</option><option value="В работе">В работе</option><option value="Готов водителю">Готов водителю</option><option value="Выполнен">Выполнен</option></select></div>
+          <div class="field span-12"><label>Общие комментарии для водителя</label><textarea data-route-field="notes" placeholder="Например: перед выездом позвонить поставщику, проверить комплектацию, сделать фото при получении/доставке"></textarea></div>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <span class="pill" id="pointsCount">0 точек</span>
+            <span class="pill warn">Очередность меняется кнопками ↑ ↓ или номером</span>
+          </div>
+          <div class="toolbar-right">
+            <button type="button" class="secondary" id="addPickupBtn" data-add-kind="Забор у поставщика">+ Забор у поставщика</button>
+            <button type="button" class="secondary" id="addDeliveryBtn" data-add-kind="Доставка клиенту">+ Доставка клиенту</button>
+            <button type="button" class="secondary" id="addTransportBtn" data-add-kind="Отправка в ТК">+ Отправка в ТК</button>
+            <button type="button" class="secondary" id="addTaskBtn" data-add-kind="Задача / сборка">+ Задача / склад</button>
+            <button type="button" class="ghost" id="copyTextBtn">Скопировать текст водителю</button>
+          </div>
+        </div>
+        <div id="routeList" class="route-list"></div>
+      </div>
+
+      <aside class="card">
+        <h2>2. Сохранённые маршруты</h2>
+        <div class="toolbar">
+          <div class="toolbar-left"><span class="pill" id="savedCount">0 сохранено</span></div>
+          <div class="toolbar-right"><button type="button" class="secondary small" id="exportJsonBtn">Экспорт JSON</button><button type="button" class="secondary small" id="importJsonBtn">Импорт JSON</button><input type="file" id="importJsonInput" accept="application/json" style="display:none" /></div>
+        </div>
+        <div id="savedRoutes" class="saved-list"></div>
+        <div class="divider"></div>
+        <h2>3. Справочник адресов</h2>
+        <p class="hint">Сохраняйте поставщиков, терминалы транспортных компаний и частые адреса клиентов. В маршрутной точке их можно выбрать из списка — адрес и контакты подставятся автоматически. Для ТК удобно хранить адрес нужного терминала, телефон склада, режим приёма, требования по упаковке и особенности оформления. Байкал Сервис, Энергия, ПЭК и Деловые Линии уже добавлены как частые ТК — адреса терминалов можно дописать в справочнике. Для отправок в ТК автоматически подставляется обязательный чек‑лист для водителя: контроль разгрузки, паллета, пузырчатая плёнка, жёсткая обрешётка, фото на весах, отправка фото и накладной в WhatsApp, ожидание подтверждения менеджера. Также добавлен склад / шоурум на Ленинском проспекте, 54.</p>
+        <div class="toolbar">
+          <div class="toolbar-left"><span class="pill good" id="contactsCount">0 адресов</span></div>
+          <div class="toolbar-right"><button type="button" class="secondary" id="addContactBtn">+ Добавить адрес</button></div>
+        </div>
+        <div style="overflow:auto;max-height:520px">
+          <table class="compact-table">
+            <thead><tr><th>Тип</th><th>Название</th><th>Адрес / контакты</th><th></th></tr></thead>
+            <tbody id="contactsTable"></tbody>
+          </table>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+
+  <nav class="mobile-bottom-bar" aria-label="Быстрые действия на телефоне">
+    <button type="button" class="mobile-fab" id="mobileAddPickupBtn" data-add-kind="Забор у поставщика">+ Забор</button>
+    <button type="button" class="mobile-fab" id="mobileAddDeliveryBtn" data-add-kind="Доставка клиенту">+ Доставка</button>
+    <button type="button" class="mobile-fab" id="mobileAddTransportBtn" data-add-kind="Отправка в ТК">+ ТК</button>
+    <button type="button" class="mobile-fab primary" id="mobileSaveBtn">Сохранить</button>
+  </nav>
+
+  <section id="printArea" class="print-area"></section>
+  <div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const CONTACTS_KEY = 'gc_logistics_contacts_v1';
+  const ROUTES_KEY = 'gc_logistics_routes_v1';
+  const ACTIVE_KEY = 'gc_logistics_active_route_v1';
+  const ROUTES_SEEDED_KEY = 'gc_logistics_routes_seeded_v13';
+
+  const TRANSPORT_CHECKLIST = `ТК — обязательный чек‑лист для водителя:
+• Тщательно контролировать выгрузку заказа из машины, чтобы не повредили товары, которые сдаём в отправку, и товары, которые остаются в машине.
+• Управлять работой грузчика / карщика во время разгрузки: показать, что снимать, как переносить и куда ставить. Не отходить от машины.
+• Аккуратно сложить груз на паллете.
+• Обязательно заказать упаковку: пузырчатая плёнка + жёсткая обрешётка.
+• Сфотографировать заказ на весах с 2–3 сторон.
+• Прислать в WhatsApp все фото груза и накладную ТК.
+• Дождаться, пока менеджер проверит накладную и подтвердит, что всё заполнено правильно. До подтверждения не уезжать.`;
+
+
+  const DEFAULT_CONTACTS = [
+    {id:'supplier_kalambus', type:'Поставщик', name:'Каламбус', address:'г. Москва, 5-я магистральная улица, 15 стр. 2', contact:'Склад', phone:'8 (915) 030-92-31', email:'', defaultTime:'', notes:'Основной поставщик. При необходимости указать номер заявки на отгрузку в маршрутной точке.'},
+    {id:'supplier_euro_grill', type:'Поставщик', name:'Евро-Гриль', address:'Москва, Дзержинский, ул. Алексеевская, дом 5', contact:'', phone:'+7 (916) 697-75-46', email:'', defaultTime:'', notes:'Основной поставщик. При необходимости указать номер заявки на отгрузку в маршрутной точке.'},
+    {id:'supplier_polyetran', type:'Поставщик', name:'Полиэтран', address:'Москва, Очаковское шоссе, 36 стр. 2, КПП 2, склад ЮТЭК, синяя арка', contact:'', phone:'+7 (901) 764-58-54', email:'', defaultTime:'', notes:'КПП 2, склад ЮТЭК, ориентир — синяя арка. При необходимости указать номер заявки на отгрузку в маршрутной точке.'},
+    {id:'warehouse_grill_center_leninsky', type:'Склад', name:'Склад · Ленинский', address:'Москва, Ленинский проспект, 54', contact:'Склад / шоурум', phone:'', email:'', defaultTime:'', notes:'Наш склад / шоурум. Использовать как промежуточную точку: забрать аксессуары, погрузить товар, вернуться на склад, передать документы.'},
+    {id:'tk_baikal_service', type:'ТК / терминал', name:'Байкал Сервис', address:'', contact:'Терминал / приём груза', phone:'', email:'', defaultTime:'', notes:'Основная транспортная компания. Указать адрес нужного терминала. Проверить город получателя, ФИО/телефон, количество мест, документы, оплату и номер накладной / заявки ТК.\n\n' + TRANSPORT_CHECKLIST},
+    {id:'tk_energia', type:'ТК / терминал', name:'Энергия', address:'', contact:'Терминал / приём груза', phone:'', email:'', defaultTime:'', notes:'Частая транспортная компания. Указать адрес нужного терминала. Проверить город получателя, ФИО/телефон, количество мест, документы, оплату и номер накладной / заявки ТК.\n\n' + TRANSPORT_CHECKLIST},
+    {id:'tk_pek', type:'ТК / терминал', name:'ПЭК', address:'', contact:'Терминал / приём груза', phone:'', email:'', defaultTime:'', notes:'Частая транспортная компания. Указать адрес нужного терминала. Проверить город получателя, ФИО/телефон, количество мест, документы, оплату и номер накладной / заявки ТК.\n\n' + TRANSPORT_CHECKLIST},
+    {id:'tk_dellin', type:'ТК / терминал', name:'Деловые Линии', address:'', contact:'Терминал / приём груза', phone:'', email:'', defaultTime:'', notes:'Частая транспортная компания. Указать адрес нужного терминала. Проверить город получателя, ФИО/телефон, количество мест, документы, оплату и номер накладной / заявки ТК.\n\n' + TRANSPORT_CHECKLIST}
+  ];
+
+  const DEFAULT_ROUTES = [
+    {
+      id:'example_route_2026_06_15_old_sheet',
+      title:'Пример старого листа · 15 июня 2026',
+      date:'2026-06-15',
+      driver:'', driverPhone:'', car:'', manager:'', managerPhone:'', status:'Черновик',
+      notes:'Пример перенесён из прежнего маршрутного листа. Можно открыть, сделать копию и заменить данные под новый рейс.',
+      updatedAt:'2026-06-15T09:00:00.000Z',
+      points:[
+        {id:'ex15_p1', order:1, kind:'Забор у поставщика', contactId:'supplier_euro_grill', name:'Евро-Гриль', address:'Москва, Дзержинский, ул. Алексеевская, дом 5', contact:'', phone:'+7 (916) 697-75-46', time:'', requestNo:'Р-1388', action:'Забрать', cargo:'Товар по заявке Р-1388', comment:'Проверить комплектацию при получении.', status:'План'},
+        {id:'ex15_p2', order:2, kind:'Забор у поставщика', contactId:'supplier_kalambus', name:'Каламбус', address:'г. Москва, 5-я магистральная улица, 15 стр. 2', contact:'Склад', phone:'8 (915) 030-92-31', time:'', requestNo:'', action:'Забрать', cargo:'Коптильня и три аксессуара', comment:'При получении проверить количество аксессуаров.', status:'План'},
+        {id:'ex15_p3', order:3, kind:'Склад', contactId:'warehouse_grill_center_leninsky', name:'Склад · Ленинский', address:'Москва, Ленинский проспект, 54', contact:'Склад / шоурум', phone:'', time:'', requestNo:'', action:'Забрать и доставить', cargo:'Аксессуары / товар со склада по маршруту', comment:'Промежуточная точка: погрузить то, что уже есть на Ленинском.', status:'План'},
+        {id:'ex15_p4', order:4, kind:'Доставка клиенту', contactId:'', name:'Матвей', address:'Москва, Армянский переулок, д. 11 стр. 3', contact:'Матвей', phone:'8 985 965-59-57', time:'', requestNo:'', action:'Доставить', cargo:'Портативный электрический гриль TravelQ 285 с аксессуарами', comment:'Гриль в Евро-Гриле, аксессуары уже у нас.', status:'План'},
+        {id:'ex15_p5', order:5, kind:'Доставка клиенту', contactId:'', name:'Склад ТракМоторс', address:'Люберцы, Проектируемый проезд № 4296, 6', contact:'', phone:'', time:'примерно 17:00–19:00, можно раньше — предварительно связаться', requestNo:'', action:'Доставить', cargo:'Портативный гриль TravelQ 285X Pro с аксессуарами', comment:'Для этого заказа всё есть на Ленинском. Перед выездом связаться и подтвердить время.', status:'План'},
+        {id:'ex15_p6', order:6, kind:'Задача / сборка', contactId:'warehouse_grill_center_leninsky', name:'Собрать пеллетный гриль', address:'Москва, Ленинский проспект, 54', contact:'Склад / шоурум', phone:'', time:'', requestNo:'', action:'Собрать', cargo:'Пеллетный гриль', comment:'Собрать на вторник.', status:'План'}
+      ]
+    }
+  ];
+
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => [...document.querySelectorAll(sel)];
+  const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+  const today = () => new Date().toISOString().slice(0,10);
+  const esc = (v='') => String(v ?? '').replace(/[&<>'"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[s]));
+  function clone(obj){ return (typeof structuredClone === 'function') ? structuredClone(obj) : JSON.parse(JSON.stringify(obj)); }
+
+  const memoryStore = {};
+  function storageGet(key){
+    try { return window.localStorage.getItem(key); }
+    catch { return Object.prototype.hasOwnProperty.call(memoryStore, key) ? memoryStore[key] : null; }
+  }
+  function storageSet(key, value){
+    try { window.localStorage.setItem(key, value); }
+    catch { memoryStore[key] = value; }
+  }
+
+  let contacts = mergeDefaultContacts(read(CONTACTS_KEY, []));
+  let routes = mergeDefaultRoutes(read(ROUTES_KEY, []));
+  let route;
+  route = read(ACTIVE_KEY, null) || blankRoute();
+
+  function ensureRoute(){
+    if(!route || typeof route !== 'object') route = blankRoute();
+    if(!Array.isArray(route.points)) route.points = [];
+    route.id = route.id || uid();
+    route.title = route.title || '';
+    route.date = route.date || today();
+    route.driver = route.driver || '';
+    route.driverPhone = route.driverPhone || '';
+    route.car = route.car || '';
+    route.manager = route.manager || '';
+    route.managerPhone = route.managerPhone || '';
+    route.status = route.status || 'Черновик';
+    route.notes = route.notes || '';
+  }
+
+  function cleanVisibleName(value){
+    return String(value || '')
+      .replace(/Grill[- ]?Center/gi, 'Склад')
+      .replace(/Гриль[- ]?Центр/gi, 'Склад')
+      .replace(/Склад\s*[·-]\s*Ленинский/g, 'Склад · Ленинский')
+      .trim();
+  }
+  function migrateVisibleNames(){
+    contacts.forEach(c => {
+      if(c.id === 'warehouse_grill_center_leninsky' || /Grill[- ]?Center|Гриль[- ]?Центр/i.test(c.name || '')) c.name = 'Склад · Ленинский';
+      c.notes = String(c.notes || '').replace(/Grill[- ]?Center|Гриль[- ]?Центр/gi, 'склад');
+    });
+    const fixPoint = p => {
+      if(!p) return;
+      if(p.contactId === 'warehouse_grill_center_leninsky' || /Grill[- ]?Center|Гриль[- ]?Центр/i.test(p.name || '')) p.name = 'Склад · Ленинский';
+      p.comment = String(p.comment || '').replace(/Grill[- ]?Center|Гриль[- ]?Центр/gi, 'склад');
+    };
+    routes.forEach(r => (r.points || []).forEach(fixPoint));
+    ensureRoute();
+    route.points.forEach(fixPoint);
+  }
+  migrateVisibleNames();
+
+  function read(key, fallback){
+    try { const raw = storageGet(key); return raw ? JSON.parse(raw) : fallback; }
+    catch { return fallback; }
+  }
+  function mergeDefaultContacts(saved){
+    const result = Array.isArray(saved) ? [...saved] : [];
+    DEFAULT_CONTACTS.forEach(def => {
+      const exists = result.some(c => String(c.name || '').trim().toLowerCase() === def.name.toLowerCase());
+      if(!exists) result.push(clone(def));
+    });
+    return result;
+  }
+  function mergeDefaultRoutes(saved){
+    const result = Array.isArray(saved) ? [...saved] : [];
+    const alreadySeeded = storageGet(ROUTES_SEEDED_KEY) === '1';
+    if(!alreadySeeded){
+      DEFAULT_ROUTES.forEach(def => {
+        const exists = result.some(r => r.id === def.id || String(r.title || '').trim().toLowerCase() === def.title.toLowerCase());
+        if(!exists) result.push(clone(def));
+      });
+      storageSet(ROUTES_SEEDED_KEY, '1');
+    }
+    return result;
+  }
+  function saveAll(){
+    storageSet(CONTACTS_KEY, JSON.stringify(contacts));
+    storageSet(ROUTES_KEY, JSON.stringify(routes));
+    storageSet(ACTIVE_KEY, JSON.stringify(route));
+    updateCounts();
+  }
+  function blankRoute(){
+    return {id: uid(), title:'', date: today(), driver:'', driverPhone:'', car:'', manager:'', managerPhone:'', status:'Черновик', notes:'', points:[blankPoint('Забор у поставщика', 1)]};
+  }
+  function defaultAction(kind){
+    if(kind === 'Доставка клиенту') return 'Доставить';
+    if(kind === 'Отправка в ТК' || kind === 'ТК / терминал') return 'Передать в ТК';
+    if(kind === 'Склад') return 'Забрать и доставить';
+    if(kind === 'Задача / сборка') return 'Собрать';
+    return 'Забрать';
+  }
+  function isTransportKind(kind){
+    return kind === 'Отправка в ТК' || kind === 'ТК / терминал';
+  }
+  function withTransportChecklist(existing=''){
+    const text = String(existing || '').trim();
+    if(text.includes('ТК — обязательный чек‑лист')) return text;
+    return text ? `${text}\n\n${TRANSPORT_CHECKLIST}` : TRANSPORT_CHECKLIST;
+  }
+  function blankPoint(kind='Забор у поставщика', forcedOrder=null){
+    const next = forcedOrder ?? ((route?.points?.length || 0) + 1);
+    return {id: uid(), order: next, kind, contactId:'', name:'', address:'', contact:'', phone:'', time:'', requestNo:'', action: defaultAction(kind), cargo:'', comment: isTransportKind(kind) ? TRANSPORT_CHECKLIST : '', status:'План'};
+  }
+  function blankContact(){
+    return {id: uid(), type:'Поставщик', name:'', address:'', contact:'', phone:'', email:'', defaultTime:'', notes:''};
+  }
+  function normalize(){
+    route.points = [...route.points].sort((a,b)=>(Number(a.order)||999)-(Number(b.order)||999)).map((p,i)=>({...p, order:i+1}));
+  }
+  function toast(text){
+    const t = $('#toast'); t.textContent = text; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 1800);
+  }
+
+  function render(){
+    ensureRoute();
+    migrateVisibleNames();
+    renderHeader();
+    normalize();
+    renderPoints();
+    renderContacts();
+    renderSaved();
+    updateCounts();
+    bindAddPointButtons();
+    saveAll();
+  }
+
+  function renderHeader(){
+    $$('[data-route-field]').forEach(el => { el.value = route[el.dataset.routeField] || ''; });
+  }
+  function contactOptions(selected=''){
+    const groups = ['Поставщик','Покупатель','ТК / терминал','Склад','Другое'];
+    let html = `<option value="">— Вручную / новый адрес —</option>`;
+    groups.forEach(g => {
+      const list = contacts.filter(c => c.type === g && c.name.trim());
+      if(list.length){
+        html += `<optgroup label="${esc(g)}">` + list.map(c => `<option value="${esc(c.id)}" ${c.id===selected?'selected':''}>${esc(c.name)}</option>`).join('') + `</optgroup>`;
+      }
+    });
+    return html;
+  }
+  function renderPoints(){
+    const box = $('#routeList');
+    if(!route.points.length){ box.innerHTML = `<div class="empty">Добавьте первую точку маршрута: забор у поставщика, доставка клиенту, ТК или другой адрес.</div>`; return; }
+    box.innerHTML = route.points.map((p, idx) => {
+      const statusClass = p.status === 'Выполнено' ? 'status-done' : p.status === 'Проблема' ? 'status-problem' : p.status === 'Ожидание' ? 'status-wait' : 'status-planned';
+      const title = p.name || p.address || p.kind || `Точка ${idx+1}`;
+      return `<article class="point" data-point-id="${esc(p.id)}">
+        <div class="point-head">
+          <div class="point-title"><div class="order-badge">${idx+1}</div><div><div class="point-name">${esc(title)}</div><span class="pill ${statusClass}">${esc(p.status || 'План')}</span></div></div>
+          <div class="point-actions">
+            <button type="button" class="secondary small" data-action="up">↑</button>
+            <button type="button" class="secondary small" data-action="down">↓</button>
+            <button type="button" class="danger small" data-action="delete">Удалить</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field span-2"><label>№</label><input type="number" min="1" data-field="order" value="${esc(p.order)}" /></div>
+          <div class="field span-3"><label>Тип точки</label><select data-field="kind"><option ${p.kind==='Забор у поставщика'?'selected':''}>Забор у поставщика</option><option ${p.kind==='Доставка клиенту'?'selected':''}>Доставка клиенту</option><option ${p.kind==='Отправка в ТК'?'selected':''}>Отправка в ТК</option><option ${p.kind==='ТК / терминал'?'selected':''}>ТК / терминал</option><option ${p.kind==='Склад'?'selected':''}>Склад</option><option ${p.kind==='Задача / сборка'?'selected':''}>Задача / сборка</option><option ${p.kind==='Другое'?'selected':''}>Другое</option></select></div>
+          <div class="field span-4"><label>Выбрать из справочника</label><select data-field="contactId">${contactOptions(p.contactId)}</select></div>
+          <div class="field span-3"><label>Статус</label><select data-field="status"><option ${p.status==='План'?'selected':''}>План</option><option ${p.status==='Ожидание'?'selected':''}>Ожидание</option><option ${p.status==='Выполнено'?'selected':''}>Выполнено</option><option ${p.status==='Проблема'?'selected':''}>Проблема</option></select></div>
+          <div class="field span-4"><label>Название / компания / клиент</label><input data-field="name" value="${esc(p.name)}" placeholder="Например: Поставщик / Иван Петров" /></div>
+          <div class="field span-8"><label>Адрес</label><input data-field="address" value="${esc(p.address)}" placeholder="Город, улица, дом, корпус, подъезд / терминал" /></div>
+          <div class="field span-3"><label>Контактное лицо</label><input data-field="contact" value="${esc(p.contact)}" placeholder="ФИО" /></div>
+          <div class="field span-3"><label>Телефон</label><input type="tel" inputmode="tel" data-field="phone" value="${esc(p.phone)}" placeholder="+7..." /></div>
+          <div class="field span-3"><label>Время / окно</label><input data-field="time" value="${esc(p.time)}" placeholder="Например: 11:00–13:00" /></div>
+          <div class="field span-3"><label>№ заявки / заказа / ТК</label><input data-field="requestNo" value="${esc(p.requestNo)}" placeholder="Заявка на отгрузку / заказ / накладная ТК" /></div>
+          <div class="field span-3"><label>Действие</label><select data-field="action"><option ${p.action==='Забрать'?'selected':''}>Забрать</option><option ${p.action==='Доставить'?'selected':''}>Доставить</option><option ${p.action==='Забрать и доставить'?'selected':''}>Забрать и доставить</option><option ${p.action==='Передать в ТК'?'selected':''}>Передать в ТК</option><option ${p.action==='Оформить отправку'?'selected':''}>Оформить отправку</option><option ${p.action==='Вернуться на склад'?'selected':''}>Вернуться на склад</option><option ${p.action==='Собрать'?'selected':''}>Собрать</option><option ${p.action==='Документы'?'selected':''}>Документы</option><option ${p.action==='Другое'?'selected':''}>Другое</option></select></div>
+          <div class="field span-5"><label>Что забрать / доставить</label><input data-field="cargo" value="${esc(p.cargo)}" placeholder="Товар, количество мест, вес, документы, упаковка" /></div>
+          <div class="field span-12"><label>${isTransportKind(p.kind) ? 'Комментарий / чек‑лист ТК для водителя' : 'Комментарий для водителя'}</label><textarea data-field="comment" placeholder="Склад, пропуск, получатель, город, оплата, фото упаковки">${esc(p.comment)}</textarea></div>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  function renderContacts(){
+    const tbody = $('#contactsTable');
+    if(!contacts.length){ tbody.innerHTML = `<tr><td colspan="4"><div class="empty">Справочник пуст. Нажмите «Добавить адрес», внесите поставщика или частый адрес доставки — дальше его можно выбирать в маршрутном листе.</div></td></tr>`; return; }
+    tbody.innerHTML = contacts.map(c => `<tr class="contact-row" data-contact-id="${esc(c.id)}">
+      <td><select data-cfield="type"><option ${c.type==='Поставщик'?'selected':''}>Поставщик</option><option ${c.type==='Покупатель'?'selected':''}>Покупатель</option><option ${c.type==='ТК / терминал'?'selected':''}>ТК / терминал</option><option ${c.type==='Склад'?'selected':''}>Склад</option><option ${c.type==='Другое'?'selected':''}>Другое</option></select></td>
+      <td><input data-cfield="name" value="${esc(c.name)}" placeholder="Название" /><input data-cfield="defaultTime" value="${esc(c.defaultTime)}" placeholder="Обычно отгрузка: 10:00–17:00" style="margin-top:6px" /></td>
+      <td><input data-cfield="address" value="${esc(c.address)}" placeholder="Адрес" /><div class="row" style="margin-top:6px"><div class="field span-6"><input data-cfield="contact" value="${esc(c.contact)}" placeholder="Контакт" /></div><div class="field span-6"><input type="tel" inputmode="tel" data-cfield="phone" value="${esc(c.phone)}" placeholder="Телефон" /></div></div><textarea data-cfield="notes" placeholder="Комментарий: склад, пропуск, документы">${esc(c.notes)}</textarea></td>
+      <td><button type="button" class="danger small" data-caction="delete">Удалить</button></td>
+    </tr>`).join('');
+  }
+
+  function renderSaved(){
+    const box = $('#savedRoutes');
+    if(!routes.length){ box.innerHTML = `<div class="empty">Сохранённых маршрутов пока нет.</div>`; return; }
+    const sorted = [...routes].sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||''));
+    box.innerHTML = sorted.map(r => `<div class="saved-item" data-route-id="${esc(r.id)}">
+      <div><div class="saved-title">${esc(r.title || 'Без названия')}</div><div class="saved-meta">${esc(r.date || '')} · ${r.points?.length || 0} точек · ${esc(r.status || 'Черновик')}</div></div>
+      <div class="saved-actions"><button type="button" class="secondary small" data-saction="load">Открыть</button><button type="button" class="secondary small" data-saction="copy">Копия</button><button type="button" class="danger small" data-saction="delete">Удалить</button></div>
+    </div>`).join('');
+  }
+  function updateCounts(){
+    ensureRoute();
+    $('#pointsCount').textContent = `${route.points.length} ${plural(route.points.length,'точка','точки','точек')}`;
+    $('#contactsCount').textContent = `${contacts.length} ${plural(contacts.length,'адрес','адреса','адресов')}`;
+    $('#savedCount').textContent = `${routes.length} ${plural(routes.length,'маршрут','маршрута','маршрутов')}`;
+  }
+  function plural(n,a,b,c){ const m=n%10, h=n%100; return h>=11&&h<=14?c:m===1?a:m>=2&&m<=4?b:c; }
+
+  function updatePoint(id, field, value){
+    const p = route.points.find(x=>x.id===id); if(!p) return;
+    if(field === 'order'){
+      normalize();
+      const desired = Math.max(1, Math.min(route.points.length, Number(value) || p.order));
+      const currentIndex = route.points.findIndex(x=>x.id===id);
+      if(currentIndex >= 0){
+        const [item] = route.points.splice(currentIndex, 1);
+        route.points.splice(desired - 1, 0, item);
+        route.points.forEach((point, idx) => point.order = idx + 1);
+      }
+      saveAll();
+      return;
+    }
+    else p[field] = value;
+    if(field === 'contactId') applyContact(p, value);
+    if(field === 'kind'){
+      p.action = defaultAction(value);
+      if(isTransportKind(value)) p.comment = withTransportChecklist(p.comment);
+    }
+    saveAll();
+  }
+  function applyContact(p, id){
+    const c = contacts.find(x=>x.id===id); if(!c) return;
+    p.name = c.name || p.name;
+    p.address = c.address || p.address;
+    p.contact = c.contact || p.contact;
+    p.phone = c.phone || p.phone;
+    p.time = c.defaultTime || p.time;
+    if(c.type){
+      p.kind = c.type === 'Поставщик' ? 'Забор у поставщика' : (c.type === 'ТК / терминал' ? 'Отправка в ТК' : c.type);
+      p.action = defaultAction(p.kind);
+    }
+    if(isTransportKind(p.kind)) p.comment = withTransportChecklist(p.comment || c.notes || '');
+    else if(c.notes && !p.comment) p.comment = c.notes;
+  }
+
+  $('#app').addEventListener('input', e => {
+    const rf = e.target.dataset.routeField;
+    if(rf){ route[rf] = e.target.value; saveAll(); return; }
+    const pointEl = e.target.closest('.point');
+    if(pointEl && e.target.dataset.field){ updatePoint(pointEl.dataset.pointId, e.target.dataset.field, e.target.value); return; }
+    const contactEl = e.target.closest('.contact-row');
+    if(contactEl && e.target.dataset.cfield){
+      const c = contacts.find(x=>x.id===contactEl.dataset.contactId); if(!c) return;
+      c[e.target.dataset.cfield] = e.target.value; saveAll(); return;
+    }
+  });
+  $('#app').addEventListener('change', e => {
+    const rf = e.target.dataset.routeField;
+    if(rf){ route[rf] = e.target.value; saveAll(); renderSaved(); return; }
+    const pointEl = e.target.closest('.point');
+    if(pointEl && e.target.dataset.field){ updatePoint(pointEl.dataset.pointId, e.target.dataset.field, e.target.value); renderPoints(); return; }
+    const contactEl = e.target.closest('.contact-row');
+    if(contactEl && e.target.dataset.cfield){
+      const c = contacts.find(x=>x.id===contactEl.dataset.contactId); if(!c) return;
+      c[e.target.dataset.cfield] = e.target.value; saveAll(); renderPoints(); return;
+    }
+  });
+  $('#app').addEventListener('click', e => {
+    const pointEl = e.target.closest('.point');
+    if(pointEl && e.target.dataset.action){
+      const id = pointEl.dataset.pointId;
+      const action = e.target.dataset.action;
+      if(action === 'delete') route.points = route.points.filter(p=>p.id!==id);
+      if(action === 'up' || action === 'down') movePoint(id, action === 'up' ? -1 : 1);
+      render(); return;
+    }
+    const contactEl = e.target.closest('.contact-row');
+    if(contactEl && e.target.dataset.caction === 'delete'){
+      const id = contactEl.dataset.contactId;
+      contacts = contacts.filter(c=>c.id!==id);
+      route.points.forEach(p => { if(p.contactId === id) p.contactId = ''; });
+      render(); return;
+    }
+    const savedEl = e.target.closest('.saved-item');
+    if(savedEl && e.target.dataset.saction){
+      const id = savedEl.dataset.routeId;
+      const action = e.target.dataset.saction;
+      const saved = routes.find(r=>r.id===id);
+      if(action === 'load' && saved){ route = clone(saved); toast('Маршрут открыт'); }
+      if(action === 'copy' && saved){ route = {...clone(saved), id: uid(), title: (saved.title || 'Маршрут') + ' — копия', date: today(), status:'Черновик'}; toast('Создана копия маршрута'); }
+      if(action === 'delete'){ routes = routes.filter(r=>r.id!==id); toast('Маршрут удалён'); }
+      render(); return;
+    }
+  });
+
+  function movePoint(id, dir){
+    normalize();
+    const i = route.points.findIndex(p=>p.id===id);
+    const j = i + dir;
+    if(i < 0 || j < 0 || j >= route.points.length) return;
+    [route.points[i], route.points[j]] = [route.points[j], route.points[i]];
+    route.points.forEach((p, idx)=>p.order = idx + 1);
+  }
+
+  function addPoint(kind){
+    ensureRoute();
+    route.points.push(blankPoint(kind));
+    render();
+    toast('Точка добавлена');
+    setTimeout(() => {
+      const points = $$('.point');
+      const last = points[points.length - 1];
+      if(last && typeof last.scrollIntoView === 'function') last.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 60);
+  }
+  // Надёжное добавление точек для телефона.
+  // На некоторых iPhone при открытии локального HTML из Files/Telegram обычный click может срабатывать нестабильно.
+  // Поэтому вешаем обработчики напрямую на кнопки и слушаем click + touchend + pointerup, но с защитой от дублей.
+  let lastAddTs = 0;
+  let lastAddKind = '';
+  function handleAddPointEvent(e){
+    const btn = e.currentTarget || e.target?.closest?.('[data-add-kind]');
+    const kind = btn?.dataset?.addKind;
+    if(!kind) return;
+    const now = Date.now();
+    if(kind === lastAddKind && now - lastAddTs < 450){
+      e.preventDefault?.();
+      e.stopPropagation?.();
+      return;
+    }
+    lastAddTs = now;
+    lastAddKind = kind;
+    e.preventDefault?.();
+    e.stopPropagation?.();
+    addPoint(kind);
+  }
+  function bindAddPointButtons(){
+    $$('[data-add-kind]').forEach(btn => {
+      if(btn.dataset.boundAddPoint === '1') return;
+      btn.dataset.boundAddPoint = '1';
+      btn.addEventListener('click', handleAddPointEvent, {passive:false});
+      btn.addEventListener('touchend', handleAddPointEvent, {passive:false});
+      btn.addEventListener('pointerup', handleAddPointEvent, {passive:false});
+    });
+  }
+  window.addRoutePoint = (kind) => addPoint(kind);
+  $('#mobileSaveBtn')?.addEventListener('click', () => { saveRoute(); renderSaved(); toast('Маршрут сохранён'); });
+  $('#addContactBtn').addEventListener('click', () => { contacts.unshift(blankContact()); render(); toast('Добавлен новый адрес в справочник'); });
+  $('#newRouteBtn').addEventListener('click', () => {
+    if(confirm('Очистить текущий черновик и создать новый маршрут? Сохранённые маршруты и справочник останутся.')){ route = blankRoute(); render(); toast('Создан новый маршрут'); }
+  });
+  $('#saveRouteBtn').addEventListener('click', () => { saveRoute(); renderSaved(); toast('Маршрут сохранён'); });
+  function saveRoute(){
+    normalize();
+    const copy = clone(route);
+    copy.updatedAt = new Date().toISOString();
+    const i = routes.findIndex(r=>r.id===copy.id);
+    if(i >= 0) routes[i] = copy; else routes.unshift(copy);
+    saveAll();
+  }
+
+  $('#copyTextBtn').addEventListener('click', async () => {
+    const text = buildDriverText();
+    try { await navigator.clipboard.writeText(text); toast('Текст маршрута скопирован'); }
+    catch { prompt('Скопируйте текст маршрута:', text); }
+  });
+  function buildDriverText(){
+    normalize();
+    const lines = [];
+    lines.push(`Маршрут: ${route.title || 'без названия'}`);
+    lines.push(`Дата: ${route.date || ''}`);
+    if(route.driver) lines.push(`Водитель: ${route.driver}`);
+    if(route.driverPhone) lines.push(`Телефон водителя: ${route.driverPhone}`);
+    if(route.car) lines.push(`Авто: ${route.car}`);
+    if(route.manager || route.managerPhone) lines.push(`На связи: ${route.manager || ''} ${route.managerPhone || ''}`.trim());
+    if(route.notes) lines.push(`Комментарий: ${route.notes}`);
+    lines.push('');
+    route.points.forEach((p,i)=>{
+      lines.push(`${i+1}. ${p.action || p.kind}: ${p.name || ''}`.trim());
+      if(p.address) lines.push(`Адрес: ${p.address}`);
+      if(p.time) lines.push(`Время: ${p.time}`);
+      if(p.requestNo) lines.push(`Заявка/заказ/ТК: ${p.requestNo}`);
+      if(p.contact || p.phone) lines.push(`Контакт: ${p.contact || ''} ${p.phone || ''}`.trim());
+      if(p.cargo) lines.push(`Товар: ${p.cargo}`);
+      if(p.comment) lines.push(`Комментарий: ${p.comment}`);
+      lines.push('');
+    });
+    return lines.join('\n');
+  }
+
+  $('#printBtn').addEventListener('click', () => { buildPrint(); setTimeout(()=>window.print(), 80); });
+  function buildPrint(){
+    normalize();
+    $('#printArea').innerHTML = `<div class="print-title"><div><h1>Маршрутный лист водителя / курьера</h1><small>Сформировано: ${esc(new Date().toLocaleString('ru-RU'))}</small></div><div><strong>Логистика</strong><br><small>${esc(route.status || '')}</small></div></div>
+      <div class="print-meta">
+        ${printBox('Маршрут', route.title)}${printBox('Дата', route.date)}${printBox('Водитель', route.driver)}${printBox('Телефон водителя', route.driverPhone)}
+        ${printBox('Авто', route.car)}${printBox('Менеджер', route.manager)}${printBox('Телефон менеджера', route.managerPhone)}${printBox('Кол-во точек', String(route.points.length))}
+        ${printBox('Статус', route.status)}
+      </div>
+      <table class="print-table"><thead><tr><th class="num">№</th><th class="mid">Тип / действие</th><th class="wide">Название и адрес</th><th class="small">Время</th><th class="small">Заявка / заказ / ТК</th><th class="mid">Контакты</th><th class="wide">Товар / комментарий</th><th class="small">Статус</th></tr></thead><tbody>
+      ${route.points.map((p,i)=>`<tr><td class="num">${i+1}</td><td>${esc(p.kind)}<br><strong>${esc(p.action)}</strong></td><td><strong>${esc(p.name)}</strong><br>${esc(p.address)}</td><td>${esc(p.time)}</td><td>${esc(p.requestNo)}</td><td>${esc(p.contact)}<br>${esc(p.phone)}</td><td>${esc(p.cargo)}<br>${esc(p.comment)}</td><td>${esc(p.status)}</td></tr>`).join('')}
+      </tbody></table>
+      <div class="print-notes"><strong>Общие комментарии:</strong><br>${esc(route.notes || '')}</div>
+      <div class="signature"><div>Водитель / курьер:<div class="sign-line"></div></div><div>Ответственный менеджер:<div class="sign-line"></div></div></div>`;
+  }
+  function printBox(label, value){ return `<div class="print-box"><div class="print-label">${esc(label)}</div><div class="print-value">${esc(value || '')}</div></div>`; }
+
+  $('#exportJsonBtn').addEventListener('click', () => {
+    const data = {version:1, exportedAt:new Date().toISOString(), contacts, routes, activeRoute:route};
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `logistics-backup-${today()}.json`;
+    a.click(); URL.revokeObjectURL(a.href);
+  });
+  $('#importJsonBtn').addEventListener('click', () => $('#importJsonInput').click());
+  $('#importJsonInput').addEventListener('change', async e => {
+    const file = e.target.files?.[0]; if(!file) return;
+    try{
+      const data = JSON.parse(await file.text());
+      if(Array.isArray(data.contacts)) contacts = data.contacts;
+      if(Array.isArray(data.routes)) routes = data.routes;
+      if(data.activeRoute) route = data.activeRoute;
+      render(); toast('Данные импортированы');
+    } catch(err){ alert('Не удалось импортировать JSON. Проверьте файл.'); }
+    e.target.value = '';
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
