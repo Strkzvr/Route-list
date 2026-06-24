@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Маршрутный лист водителя / курьера · v16 Compact Print</title>
+  <title>Маршрутный лист водителя / курьера · v17 Compact Tested</title>
   <style>
     :root{
       --bg:#f4f6f5;
@@ -616,7 +616,11 @@
     const rf = e.target.dataset.routeField;
     if(rf && rf !== 'driverId'){ route[rf] = e.target.value; saveAll(); return; }
     const pointEl = e.target.closest('.point');
-    if(pointEl && e.target.dataset.field){ updatePoint(pointEl.dataset.pointId, e.target.dataset.field, e.target.value); return; }
+    if(pointEl && e.target.dataset.field){
+      updatePoint(pointEl.dataset.pointId, e.target.dataset.field, e.target.value);
+      if(e.target.dataset.field === 'order'){ renderPoints(); updateCounts(); }
+      return;
+    }
     const contactEl = e.target.closest('.contact-row');
     if(contactEl && e.target.dataset.cfield){
       const c = contacts.find(x=>x.id===contactEl.dataset.contactId); if(!c) return;
