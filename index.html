@@ -187,24 +187,179 @@
       body.printing-preview .print-preview-document{display:block!important;max-width:none!important;margin:0!important;padding:0!important;border-radius:0!important;box-shadow:none!important;background:#fff!important}
       body:not(.printing-preview) .print-preview-overlay{display:none!important}
     }
+
+
+    /* ===== v21 Premium Workspace Redesign ===== */
+    :root{
+      color-scheme: light;
+      --surface:#ffffff;
+      --surface-2:#f7faf8;
+      --surface-3:#eef6f1;
+      --ink:#101817;
+      --ink-soft:#3d4a45;
+      --accent-bright:#16834f;
+      --accent-blue:#3478d8;
+      --glass:rgba(255,255,255,.74);
+      --nav-bg:rgba(255,255,255,.82);
+    }
+    body[data-theme="dark"]{
+      color-scheme: dark;
+      --bg:#0f1715;
+      --card:#16201d;
+      --surface:#18231f;
+      --surface-2:#111a17;
+      --surface-3:#1e3028;
+      --text:#eff7f2;
+      --ink:#eff7f2;
+      --ink-soft:#c0cec6;
+      --muted:#9aaaa2;
+      --line:#2a3832;
+      --soft:#1b2a24;
+      --accent:#2fb66a;
+      --accent2:#63d792;
+      --accent-bright:#32c272;
+      --good:#6fe0a0;
+      --warn:#f0b858;
+      --bad:#ff7a7a;
+      --glass:rgba(22,32,29,.72);
+      --nav-bg:rgba(15,23,21,.86);
+      --shadow:0 18px 45px rgba(0,0,0,.32);
+    }
+    body{background:
+      radial-gradient(circle at 78% 6%, rgba(47,158,92,.11), transparent 32%),
+      radial-gradient(circle at 12% 3%, rgba(52,120,216,.08), transparent 28%),
+      linear-gradient(135deg,var(--surface-2) 0%,var(--soft) 100%);
+      min-height:100vh;
+    }
+    body[data-theme="dark"]{background:
+      radial-gradient(circle at 80% 2%, rgba(47,182,106,.16), transparent 31%),
+      radial-gradient(circle at 8% 8%, rgba(52,120,216,.12), transparent 28%),
+      linear-gradient(135deg,#0c1210 0%,#121c18 100%);
+    }
+    .wrap{max-width:100%;}
+    .app-shell-nav{display:none}
+    .theme-toggle,.premium-icon-btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;white-space:nowrap}
+    .premium-icon-btn{width:44px;min-width:44px;padding:10px;border-radius:13px;background:var(--surface);color:var(--accent2);border:1px solid var(--line);box-shadow:none}
+    body[data-theme="dark"] .premium-icon-btn,
+    body[data-theme="dark"] button.secondary,
+    body[data-theme="dark"] button.ghost{background:#16231f;color:var(--text);border-color:var(--line)}
+    body[data-theme="dark"] input,
+    body[data-theme="dark"] select,
+    body[data-theme="dark"] textarea{background:#111a17;color:var(--text);border-color:var(--line)}
+    body[data-theme="dark"] input::placeholder,
+    body[data-theme="dark"] textarea::placeholder{color:#718178}
+    body[data-theme="dark"] .point,
+    body[data-theme="dark"] .saved-item,
+    body[data-theme="dark"] .compact-table td,
+    body[data-theme="dark"] .compact-table tr{background:#131e1a;border-color:var(--line)}
+    body[data-theme="dark"] .route-extra,
+    body[data-theme="dark"] .route-extra summary{background:#131e1a;border-color:var(--line);color:var(--text)}
+    body[data-theme="dark"] .print-preview-overlay{background:#101714}
+    body[data-theme="dark"] .print-preview-actions{background:rgba(16,23,20,.94)}
+    body[data-theme="dark"] .print-preview-document{background:#fff;color:#111}
+
+    @media(min-width:981px){
+      .wrap{display:grid;grid-template-columns:240px minmax(0,1fr);gap:0;min-height:100vh;padding:14px;}
+      .app-shell-nav{display:flex;grid-column:1;grid-row:1 / span 2;position:sticky;top:14px;height:calc(100vh - 28px);flex-direction:column;gap:14px;padding:18px;border:1px solid rgba(217,225,221,.75);border-radius:26px;background:var(--nav-bg);box-shadow:var(--shadow);backdrop-filter:blur(18px);}
+      .hero,.grid{grid-column:2;min-width:0;margin-left:18px;margin-right:0;}
+      .hero{align-items:flex-start;border:1px solid rgba(217,225,221,.78);border-radius:28px;background:var(--glass);box-shadow:var(--shadow);backdrop-filter:blur(18px);padding:20px 22px;margin-bottom:16px;}
+      .grid{grid-template-columns:minmax(0,1.28fr) minmax(360px,.72fr);gap:16px;}
+      .app-logo{display:flex;gap:12px;align-items:center;font-weight:900;font-size:16px;letter-spacing:-.02em;color:var(--ink);line-height:1.1;margin-bottom:8px;}
+      .app-logo-mark{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 14px 26px rgba(47,107,79,.25);font-size:22px;}
+      .app-nav-list{display:grid;gap:6px;}
+      .app-nav-link{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink-soft);font-weight:800;font-size:14px;padding:11px 12px;border-radius:14px;transition:.16s;background:transparent;border:1px solid transparent;}
+      .app-nav-link:hover{background:var(--surface-3);color:var(--ink);}
+      .app-nav-link.active{background:linear-gradient(135deg,rgba(47,158,92,.16),rgba(47,158,92,.07));color:var(--accent2);border-color:rgba(47,158,92,.18);}
+      .app-nav-spacer{flex:1}
+      .app-nav-backup{padding:14px;border-radius:18px;background:var(--surface-2);border:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.35;}
+      .app-nav-backup strong{display:block;color:var(--ink);font-size:13px;margin-bottom:4px;}
+      h1{font-size:30px;}
+      .subtitle{font-size:14px;max-width:680px;}
+    }
+    h1{letter-spacing:-.045em;color:var(--ink)}
+    .eyebrow{color:var(--accent);letter-spacing:.14em;}
+    .subtitle,.hint,.saved-meta{color:var(--muted)}
+    .card{background:var(--glass);border-color:rgba(217,225,221,.82);border-radius:24px;box-shadow:var(--shadow);backdrop-filter:blur(18px);}
+    body[data-theme="dark"] .card{border-color:rgba(54,73,65,.85)}
+    .card h2{display:flex;align-items:center;gap:8px;font-size:19px;color:var(--ink)}
+    button{background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;box-shadow:0 12px 26px rgba(47,107,79,.18);transition:transform .16s ease, filter .16s ease, box-shadow .16s ease;}
+    button:hover{transform:translateY(-1px);box-shadow:0 16px 30px rgba(47,107,79,.22);}
+    button.secondary,button.ghost{background:var(--surface);color:var(--accent2);border-color:var(--line);}
+    button.danger{background:var(--surface);}
+    input,select,textarea{border-radius:13px;background:rgba(255,255,255,.88);border-color:var(--line);}
+    label{color:var(--ink-soft)}
+    .pill{border-radius:999px;background:var(--surface-3);border-color:rgba(47,107,79,.14);color:var(--ink-soft)}
+    .pill.good,.status-done{background:rgba(47,158,92,.12);color:var(--accent2);border-color:rgba(47,158,92,.24)}
+    .pill.warn,.status-wait{background:rgba(240,184,88,.14);color:var(--warn);border-color:rgba(240,184,88,.25)}
+    .status-planned{background:rgba(47,120,216,.12);color:var(--accent-blue);border-color:rgba(52,120,216,.22)}
+    .point{background:var(--surface);border-radius:20px;border-color:rgba(217,225,221,.82);box-shadow:0 8px 24px rgba(20,32,27,.055)}
+    .order-badge{background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;box-shadow:0 10px 18px rgba(47,107,79,.18)}
+    .saved-item{border-radius:18px;background:var(--surface);box-shadow:0 6px 18px rgba(20,32,27,.04)}
+    .compact-table td{background:var(--surface)}
+    .route-list{position:relative;}
+    .point:before{content:'';position:absolute;left:29px;top:-10px;bottom:100%;width:2px;background:rgba(47,158,92,.24)}
+    .point:first-child:before{display:none}
+    .hero-actions{align-items:center}
+    .hero-actions .save-state{display:inline-flex;align-items:center;gap:6px;color:var(--accent2);font-size:12px;font-weight:800;margin-left:4px;}
+    .toast{border-radius:999px;background:var(--ink);color:var(--surface);}
+    .mobile-bottom-bar{background:var(--nav-bg);backdrop-filter:blur(18px)}
+    body[data-theme="dark"] .mobile-bottom-bar{border-color:var(--line)}
+    .mobile-bottom-bar .mobile-fab.theme-mobile{background:var(--surface);color:var(--accent2);border-color:var(--line)}
+
+    @media(max-width:980px){
+      .wrap{display:block;padding:12px 10px 96px;}
+      .app-shell-nav{display:none!important}
+      .hero{border-radius:0;background:transparent;box-shadow:none;padding:2px 2px 10px;margin-bottom:8px;}
+      .hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+      .hero-actions .premium-icon-btn{width:100%}
+      .hero-actions .save-state{grid-column:1 / -1;justify-content:flex-end;margin:0 2px 0 0}
+      .card{border-radius:20px;padding:14px;}
+      .grid{gap:12px;}
+      .point{border-radius:18px;}
+      h1{font-size:25px;}
+    }
+    @media(max-width:720px){
+      #printBtn{grid-column:auto}
+      .hero-actions{grid-template-columns:1fr 1fr}
+      .theme-toggle{display:none}
+      .compact-help{display:none}
+      .mobile-bottom-bar{grid-template-columns:repeat(5,1fr);}
+      .mobile-bottom-bar .mobile-fab{font-size:11px;}
+    }
+
   </style>
 </head>
 <body>
   <main class="wrap" id="app">
+    <aside class="app-shell-nav" aria-label="Навигация приложения">
+      <div class="app-logo"><div class="app-logo-mark">🚚</div><div>Маршрутные<br>листы</div></div>
+      <nav class="app-nav-list">
+        <a class="app-nav-link active" href="#app">＋ Новый маршрут</a>
+        <a class="app-nav-link" href="#routeList">▣ Маршрут</a>
+        <a class="app-nav-link" href="#savedRoutes">◷ Сохранённые</a>
+        <a class="app-nav-link" href="#contactsTable">⌖ Адреса</a>
+        <a class="app-nav-link" href="#driversTable">♙ Водители</a>
+      </nav>
+      <div class="app-nav-spacer"></div>
+      <button type="button" class="secondary theme-toggle" data-theme-toggle>🌙 Тёмная тема</button>
+      <div class="app-nav-backup"><strong>Экспорт и резервная копия</strong>Данные хранятся в браузере. Периодически сохраняйте JSON.</div>
+    </aside>
     <section class="hero">
       <div class="hero-title">
         <div class="eyebrow">Логистика</div>
-        <h1>Маршрутный лист</h1>
-        <div class="subtitle">Создание рейса, точки маршрута, справочники, сохранение и компактный PDF для водителя.</div>
+        <h1>Новый маршрутный лист</h1>
+        <div class="subtitle">Создайте маршрут, сохраните его, распечатайте PDF или отправьте водителю.</div>
         <details class="compact-help">
           <summary>Что умеет приложение</summary>
           <div class="compact-help-body">Справочник поставщиков, адресов, ТК и водителей. Точки маршрута можно добавлять, сортировать, сохранять как рейсы и выгружать в PDF. Для отправок в ТК автоматически добавляется чек‑лист: контроль разгрузки, паллета, упаковка, фото и проверка накладной.</div>
         </details>
       </div>
       <div class="hero-actions">
+        <button type="button" class="premium-icon-btn" data-theme-toggle aria-label="Переключить тему">🌙</button>
         <button type="button" class="secondary" id="newRouteBtn">Новый маршрут</button>
-        <button type="button" class="secondary" id="saveRouteBtn">Сохранить маршрут</button>
-        <button type="button" id="printBtn">Предпросмотр / PDF</button>
+        <button type="button" id="saveRouteBtn">✓ Сохранить маршрут</button>
+        <button type="button" class="secondary" id="printBtn">Предпросмотр / PDF</button>
+        <span class="save-state">✓ Сохранено локально</span>
       </div>
     </section>
 
@@ -291,6 +446,7 @@
     <button type="button" class="mobile-fab" id="mobileAddPickupBtn" data-add-kind="Забор у поставщика">+ Забор</button>
     <button type="button" class="mobile-fab" id="mobileAddDeliveryBtn" data-add-kind="Доставка клиенту">+ Доставка</button>
     <button type="button" class="mobile-fab" id="mobileAddTransportBtn" data-add-kind="Отправка в ТК">+ ТК</button>
+    <button type="button" class="mobile-fab theme-mobile" data-theme-toggle>Тема</button>
     <button type="button" class="mobile-fab primary" id="mobileSaveBtn">Сохранить</button>
   </nav>
 
@@ -375,6 +531,28 @@
     try { window.localStorage.setItem(key, value); }
     catch { memoryStore[key] = value; }
   }
+
+  const THEME_KEY = 'gc_logistics_theme_v21_dark_default';
+  function applyTheme(theme){
+    const normalized = theme === 'dark' ? 'dark' : 'light';
+    document.body.dataset.theme = normalized;
+    try { storageSet(THEME_KEY, normalized); } catch {}
+    document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
+      const isDark = normalized === 'dark';
+      btn.setAttribute('aria-pressed', String(isDark));
+      if(btn.classList.contains('premium-icon-btn')) btn.textContent = isDark ? '☀️' : '🌙';
+      else if(btn.classList.contains('theme-mobile')) btn.textContent = isDark ? 'Свет' : 'Тема';
+      else btn.textContent = isDark ? '☀️ Светлая тема' : '🌙 Тёмная тема';
+    });
+  }
+  function toggleTheme(){ applyTheme(document.body.dataset.theme === 'dark' ? 'light' : 'dark'); }
+  document.addEventListener('click', e => {
+    const btn = e.target.closest?.('[data-theme-toggle]');
+    if(!btn) return;
+    e.preventDefault();
+    toggleTheme();
+  });
+  applyTheme(storageGet(THEME_KEY) || 'dark');
 
   let contacts = mergeDefaultContacts(read(CONTACTS_KEY, []));
   let drivers = mergeDefaultDrivers(read(DRIVERS_KEY, []));
